@@ -3,9 +3,11 @@ package com.gabry;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootApplication
 @RestController
@@ -47,6 +49,27 @@ public class Main {
         customerRepository.deleteById(id);
     }
 
+
+    @PutMapping("{customerId}")
+    public void updateCustomer(
+            @RequestBody newCustomerRequest newCustomerRequest,
+            @PathVariable("customerId") Integer id
+            ){
+
+
+        Optional<Customer> tempCustomer = customerRepository.findById(id);
+        if(tempCustomer.isPresent()) {
+            tempCustomer.map(Customer -> {
+                if(newCustomerRequest.name!=null)
+                    Customer.setName(newCustomerRequest.name);
+                if(newCustomerRequest.email!=null)
+                    Customer.setEmail(newCustomerRequest.email);
+                if(newCustomerRequest.age!=null)
+                    Customer.setAge(newCustomerRequest.age);
+                return customerRepository.save(Customer);
+            });
+        }
+    }
 
 //    @GetMapping("/greet")
 //    public greetResponse greet(){
